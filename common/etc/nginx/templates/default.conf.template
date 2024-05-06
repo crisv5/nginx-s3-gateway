@@ -13,6 +13,18 @@ map $request_uri $uri_full_path {
     "~^(?P<path>.*?)(\?.*)*$"  $path;
 }
 
+# Map to set Content-type header according to resource extension
+map $request_uri $content_type_header {
+    ~*\.(html|htm)$       text/html;
+    ~*\.(txt|text)$       text/plain;
+    ~*\.(css)$            text/css;
+    ~*\.(js)$             application/javascript;
+    ~*\.(jpg|jpeg)$       image/jpeg;
+    ~*\.(png)$            image/png;
+    ~*\.(gif)$            image/gif;
+    default               application/octet-stream;
+}
+
 # Remove/replace a portion of request URL (if configured)
 map $uri_full_path $uri_path {
 	"~^$STRIP_LEADING_DIRECTORY_PATH(.*)"  $PREFIX_LEADING_DIRECTORY_PATH$1;
@@ -265,6 +277,9 @@ server {
 
         # We set the host as the bucket name to inform the S3 API of the bucket
         proxy_set_header Host $s3_host;
+        
+        # Always set Content-Type header to text/html
+        add_header Content-Type text/html;
 
         # Use keep alive connections in order to improve performance
         proxy_http_version 1.1;
