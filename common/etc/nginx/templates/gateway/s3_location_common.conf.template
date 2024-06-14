@@ -21,6 +21,9 @@ proxy_set_header X-Amz-Security-Token $awsSessionToken;
 # We set the host as the bucket name to inform the S3 API of the bucket
 proxy_set_header Host $s3_host;
 
+# Set Content-Type header according to resource extension
+add_header Content-Type $content_type_header;
+
 # Use keep alive connections in order to improve performance
 proxy_http_version 1.1;
 proxy_set_header Connection '';
