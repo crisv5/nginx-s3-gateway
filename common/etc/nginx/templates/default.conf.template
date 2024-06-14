@@ -13,6 +13,40 @@ map $request_uri $uri_full_path {
     "~^(?P<path>.*?)(\?.*)*$"  $path;
 }
 
+# Map to set Content-type header according to resource extension
+map $request_uri $content_type_header {
+    ~*\.(html|htm)$       text/html;
+    ~*\.(txt|text)$       text/plain;
+    ~*\.(css)$            text/css;
+    ~*\.(csv)$            text/csv;
+    ~*\.(js)$             application/javascript;
+    ~*\.(jpg|jpeg)$       image/jpeg;
+    ~*\.(png)$            image/png;
+    ~*\.(gif)$            image/gif;
+    ~*\.(webp)$           image/webp;
+    ~*\.(svg)$            image/svg+xml;
+    ~*\.(bmp)$            image/bmp;
+    ~*\.(tiff|tif)$       image/tiff;
+    ~*\.(mp3)$            audio/mpeg;
+    ~*\.(wav)$            audio/wav;
+    ~*\.(ogg)$            audio/ogg;
+    ~*\.(webm)$           audio/webm;
+    ~*\.(mp4)$            video/mp4;
+    ~*\.(webm)$           video/webm;
+    ~*\.(ogv)$            video/ogg;
+    ~*\.(pdf)$            application/pdf;
+    ~*\.(json)$           application/json;
+    ~*\.(xml)$            application/xml;
+    ~*\.(zip)$            application/zip;
+    ~*\.(gz)$             application/gzip;
+    ~*\.(js)$             application/javascript;
+    ~*\.(jsonld)$         application/ld+json;
+    ~*\.(ttf)$            font/ttf;
+    ~*\.(woff)$           font/woff;
+    ~*\.(woff2)$          font/woff2;
+    default               application/octet-stream;
+}
+
 # Remove/replace a portion of request URL (if configured)
 map $uri_full_path $uri_path {
 	"~^$STRIP_LEADING_DIRECTORY_PATH(.*)"  $PREFIX_LEADING_DIRECTORY_PATH$1;
@@ -258,6 +292,9 @@ server {
         # Enable passing of the server name through TLS Server Name Indication extension.
         proxy_ssl_server_name on;
         proxy_ssl_name ${S3_SERVER};
+        
+        # Always set Content-Type header to test/html
+        add_header Content-Type text/html;
 
         # Set the Authorization header to the AWS Signatures credentials
         proxy_set_header Authorization $s3auth;
