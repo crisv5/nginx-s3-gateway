@@ -293,7 +293,7 @@ server {
         proxy_ssl_server_name on;
         proxy_ssl_name ${S3_SERVER};
         
-        # Always set Content-Type header to test/html
+        # Always set Content-Type header to text/html
         add_header Content-Type text/html;
 
         # Set the Authorization header to the AWS Signatures credentials
